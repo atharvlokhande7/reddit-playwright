@@ -1,0 +1,27 @@
+import { chromium, FullConfig } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
+import data from './data/test_data.json'; // Adjust if needed
+
+const authFilePath = path.resolve('auth.json');
+
+async function globalSetup(config: FullConfig) {
+  const browser = await chromium.launch({ headless: false });
+  const context = await browser.newContext();
+  const page = await context.newPage();
+
+  await page.goto('https://www.reddit.com/login');
+
+  await page.locator('form[action="/login"] input[name="username"]').fill('your-username');
+  await page.locator('form[action="/login"] input[name="password"]').fill('your-password');
+  
+  await page.locator('input[name="password"]').press('Enter');
+
+  await page.waitForURL('https://www.reddit.com/', { timeout: 20000 });
+  await page.waitForSelector('img[alt="User Avatar"]', { timeout: 20000 });
+
+  await context.storageState({ path: authFilePath });
+  await browser.close();
+}
+
+export default globalSetup;
