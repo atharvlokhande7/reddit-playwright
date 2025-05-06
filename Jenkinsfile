@@ -24,7 +24,7 @@ pipeline {
     stage('Run Tests (Headed Mode via xvfb)') {
       steps {
         sh '''
-          npx playwright test tests/search_subreddit.spec.ts --headed
+         xvfb-run npx playwright test tests/search_subreddit.spec.ts --headed
         '''
       }
     }
